@@ -1,1 +1,135 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Jargle Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; }
+.slide {
+  position:fixed; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:10vw 8vw;
+  opacity:0; transition:opacity 0.8s ease;
+  pointer-events:none;
+}
+.slide.visible { opacity:1; }
+#s1 { background:linear-gradient(160deg, #1C3729 0%, #0E2B1F 100%); gap:8vw; }
+#s2 { background:#F5F0E8; justify-content:flex-start; padding-top:12vw; }
+#s3 { background:#0B1F45; gap:5vw; }
+
+/* S1 */
+.s1-top { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:5.5vw; color:#C9A84C; text-align:center; line-height:1.6; }
+.s1-mid { font-family:'Playfair Display',serif; font-weight:700; font-size:15vw; color:#F5F0E8; text-align:center; line-height:1; white-space:nowrap; }
+.s1-mid span { color:#C9A84C; }
+.s1-bot { font-family:'Playfair Display',serif; font-style:italic; font-size:5.5vw; color:#F5F0E8; text-align:center; line-height:1.5; }
+.s1-bot strong { color:#C9A84C; font-style:normal; font-weight:700; font-size:6.5vw; }
+
+/* S2 */
+.s2-header { width:100%; text-align:center; padding-bottom:5vw; border-bottom:1px solid rgba(201,168,76,0.3); margin-bottom:5vw; }
+.s2-logo { font-family:'Playfair Display',serif; font-weight:900; font-size:14vw; color:#0B1F45; line-height:1; margin-bottom:2vw; }
+.s2-logo span { color:#C9A84C; font-style:italic; }
+.s2-sub { font-family:'Space Mono',monospace; font-size:3vw; letter-spacing:3px; color:#999; text-transform:uppercase; }
+.strips { width:100%; display:flex; flex-direction:column; gap:3vw; }
+.strip { width:100%; height:18vw; border-radius:2.5vw; display:flex; align-items:center; padding:0 5vw; opacity:0; transform:translateX(-30px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.strip.in { opacity:1; transform:translateX(0); }
+.strip-find { background:#0B1F45; border:1.5px solid #C9A84C; }
+.strip-med { background:#1A6B4A; }
+.strip-sport { background:#8B1A1A; }
+.strip-name { font-family:'Playfair Display',serif; font-style:italic; font-weight:700; font-size:8vw; color:#F5F0E8; flex:1; }
+.strip-cat { font-family:'Space Mono',monospace; font-size:2.8vw; letter-spacing:1px; color:rgba(245,240,232,0.85); text-transform:uppercase; text-align:right; line-height:1.7; }
+
+/* S3 */
+.s3-logo { font-family:'Playfair Display',serif; font-weight:900; font-size:15vw; color:#F5F0E8; text-align:center; line-height:1; opacity:0; transition:opacity 0.7s ease; }
+.s3-logo span { color:#C9A84C; font-style:italic; }
+.s3-logo.in { opacity:1; }
+.s3-tag { font-family:'Space Mono',monospace; font-size:3vw; letter-spacing:2px; color:rgba(201,168,76,0.7); text-transform:uppercase; text-align:center; opacity:0; transition:opacity 0.7s ease 0.2s; }
+.s3-tag.in { opacity:1; }
+.s3-grid { display:grid; grid-template-columns:repeat(5,10vw); grid-template-rows:repeat(6,10vw); gap:1.5vw; opacity:0; transition:opacity 0.7s ease 0.4s; }
+.s3-grid.in { opacity:1; }
+.cell { border:2px solid rgba(201,168,76,0.3); border-radius:1vw; }
+.s3-cta { background:#C9A84C; border-radius:3vw; padding:4vw 8vw; width:100%; text-align:center; opacity:0; transform:translateY(14px); transition:opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s; }
+.s3-cta.in { opacity:1; transform:translateY(0); }
+.s3-try { font-family:'Space Mono',monospace; font-size:3vw; letter-spacing:2px; color:#0B1F45; text-transform:uppercase; margin-bottom:2vw; opacity:0.7; }
+.s3-url { font-family:'Playfair Display',serif; font-size:11vw; font-weight:900; color:#0B1F45; line-height:1; }
+
+.replay { position:fixed; bottom:5vw; right:5vw; font-family:'Space Mono',monospace; font-size:3vw; letter-spacing:1px; color:rgba(201,168,76,0.5); background:none; border:1px solid rgba(201,168,76,0.3); padding:2vw 4vw; border-radius:10vw; cursor:pointer; text-transform:uppercase; z-index:100; }
+</style>
+</head>
+<body>
+<div class="slide" id="s1">
+  <p class="s1-top">You've been doing<br>one a day.</p>
+  <p class="s1-mid">Try <span>Three.</span></p>
+  <p class="s1-bot">Same idea...<br><strong>but Different.</strong></p>
+</div>
+<div class="slide" id="s2">
+  <div class="s2-header">
+    <div class="s2-logo">Jarg<span>LE</span></div>
+    <div class="s2-sub">Three puzzles · every day</div>
+  </div>
+  <div class="strips">
+    <div class="strip strip-find" id="strip1"><span class="strip-name">FindLE</span><span class="strip-cat">Finance &amp;<br>Economics</span></div>
+    <div class="strip strip-med" id="strip2"><span class="strip-name">MedicLE</span><span class="strip-cat">Medicine &amp;<br>Anatomy</span></div>
+    <div class="strip strip-sport" id="strip3"><span class="strip-name">SportLE</span><span class="strip-cat">Sports &amp;<br>Athletics</span></div>
+  </div>
+</div>
+<div class="slide" id="s3">
+  <div class="s3-logo" id="s3logo">Jarg<span>LE</span></div>
+  <div class="s3-tag" id="s3tag">For those who know things.</div>
+  <div class="s3-grid" id="s3grid">
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+  </div>
+  <div class="s3-cta" id="s3cta">
+    <div class="s3-try">Try it free · every day</div>
+    <div class="s3-url">jargle.org</div>
+  </div>
+</div>
+<button class="replay" onclick="play()">↺</button>
+<script>
+let timers=[];
+function clearTimers(){timers.forEach(clearTimeout);timers=[];}
+function reset(){
+  clearTimers();
+  ['s1','s2','s3'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  ['strip1','strip2','strip3','s3logo','s3tag','s3grid','s3cta'].forEach(id=>document.getElementById(id).classList.remove('in'));
+}
+function crossfade(a,b,cb){
+  document.getElementById(a).classList.remove('visible');
+  setTimeout(()=>{document.getElementById(b).classList.add('visible');if(cb)cb();},800);
+}
+function play(){
+  reset();
+  setTimeout(()=>{
+    document.getElementById('s1').classList.add('visible');
+    timers.push(setTimeout(()=>{
+      crossfade('s1','s2',()=>{
+        timers.push(setTimeout(()=>document.getElementById('strip1').classList.add('in'),300));
+        timers.push(setTimeout(()=>document.getElementById('strip2').classList.add('in'),900));
+        timers.push(setTimeout(()=>document.getElementById('strip3').classList.add('in'),1500));
+        timers.push(setTimeout(()=>{
+          crossfade('s2','s3',()=>{
+            document.getElementById('s3logo').classList.add('in');
+            document.getElementById('s3tag').classList.add('in');
+            document.getElementById('s3grid').classList.add('in');
+            document.getElementById('s3cta').classList.add('in');
+          });
+        },1500+5000));
+      });
+    },4500));
+  },600);
+}
+window.addEventListener('load',()=>setTimeout(play,800));
+</script>
+</body>
+</html>
+
