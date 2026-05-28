@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jargle Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   TIMING — edit these to adjust durations
+   ============================================ */
+/* Slide 1 hold:     4500ms  */
+/* Crossfade:         800ms  */
+/* Strip 1 in:        300ms after S2 visible */
+/* Strip 2 in:        900ms after S2 visible */
+/* Strip 3 in:       1500ms after S2 visible */
+/* Slide 2 hold:     5000ms after last strip */
+/* Slide 3 hold:     6000ms then stops       */
+/* ============================================ */
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #0E2B1F;
+}
+
+.slide {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 48px;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+.slide.visible { opacity: 1; }
+
+/* SLIDE 1 — deep green */
+#s1 {
+  background: linear-gradient(160deg, #1C3729 0%, #0E2B1F 100%);
+  gap: 32px;
+}
+
+/* SLIDE 2 — cream */
+#s2 {
+  background: #F5F0E8;
+  justify-content: flex-start;
+  padding-top: 72px;
+}
+
+/* SLIDE 3 — navy */
+#s3 {
+  background: #0B1F45;
+  gap: 28px;
+}
+
+/* ---- SLIDE 1 ELEMENTS ---- */
+.s1-top {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(18px, 3.5vw, 28px);
+  color: #C9A84C;
+  text-align: center;
+  line-height: 1.5;
+}
+.s1-mid {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: clamp(42px, 8vw, 72px);
+  color: #F5F0E8;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+.s1-mid span { color: #C9A84C; }
+.s1-bot {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(18px, 3.5vw, 28px);
+  color: #F5F0E8;
+  text-align: center;
+  line-height: 1.5;
+}
+.s1-bot strong {
+  color: #C9A84C;
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(20px, 4vw, 32px);
+}
+
+/* ---- SLIDE 2 ELEMENTS ---- */
+.s2-header {
+  width: 100%;
+  text-align: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+  margin-bottom: 24px;
+}
+.s2-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(36px, 7vw, 60px);
+  color: #0B1F45;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.s2-logo span { color: #C9A84C; font-style: italic; }
+.s2-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1.8vw, 14px);
+  letter-spacing: 3px;
+  color: #999;
+  text-transform: uppercase;
+}
+.strips {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.strip {
+  width: 100%;
+  height: clamp(64px, 11vw, 90px);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.strip.in { opacity: 1; transform: translateX(0); }
+.strip-find  { background: #0B1F45; border: 1.5px solid #C9A84C; }
+.strip-med   { background: #1A6B4A; }
+.strip-sport { background: #8B1A1A; }
+.strip-name {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(20px, 4vw, 34px);
+  color: #F5F0E8;
+  flex: 1;
+}
+.strip-cat {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 1.6vw, 13px);
+  letter-spacing: 1px;
+  color: rgba(245,240,232,0.85);
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* ---- SLIDE 3 ELEMENTS ---- */
+.s3-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(42px, 8vw, 72px);
+  color: #F5F0E8;
+  text-align: center;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.s3-logo span { color: #C9A84C; font-style: italic; }
+.s3-logo.in { opacity: 1; }
+
+.s3-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1.8vw, 15px);
+  letter-spacing: 3px;
+  color: rgba(201,168,76,0.7);
+  text-transform: uppercase;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.7s ease 0.2s;
+}
+.s3-tag.in { opacity: 1; }
+
+.s3-grid {
+  display: grid;
+  grid-template-columns: repeat(5, clamp(28px, 5vw, 44px));
+  grid-template-rows: repeat(6, clamp(28px, 5vw, 44px));
+  gap: 5px;
+  opacity: 0;
+  transition: opacity 0.7s ease 0.4s;
+}
+.s3-grid.in { opacity: 1; }
+.cell {
+  border: 2px solid rgba(201,168,76,0.3);
+  border-radius: 4px;
+}
+
+.s3-cta {
+  background: #C9A84C;
+  border-radius: 12px;
+  padding: clamp(14px, 2.5vw, 22px) clamp(24px, 4vw, 40px);
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s;
+}
+.s3-cta.in { opacity: 1; transform: translateY(0); }
+.s3-try {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(10px, 1.8vw, 14px);
+  letter-spacing: 3px;
+  color: #0B1F45;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+.s3-url {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 5.5vw, 48px);
+  font-weight: 900;
+  color: #0B1F45;
+  line-height: 1;
+}
+
+/* Replay button */
+.replay {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: rgba(201,168,76,0.5);
+  background: none;
+  border: 1px solid rgba(201,168,76,0.3);
+  padding: 10px 20px;
+  border-radius: 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  z-index: 100;
+  transition: color 0.2s, border-color 0.2s;
+}
+.replay:hover { color: #C9A84C; border-color: #C9A84C; }
+</style>
+</head>
+<body>
+
+  <!-- SLIDE 1 -->
+  <div class="slide" id="s1">
+    <p class="s1-top">You've been doing<br>one a day.</p>
+    <p class="s1-mid">Try <span>Three.</span></p>
+    <p class="s1-bot">Same idea...<br><strong>but Different.</strong></p>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide" id="s2">
+    <div class="s2-header">
+      <div class="s2-logo">Jarg<span>LE</span></div>
+      <div class="s2-sub">Three puzzles · every day</div>
+    </div>
+    <div class="strips">
+      <div class="strip strip-find" id="strip1">
+        <span class="strip-name">FindLE</span>
+        <span class="strip-cat">Finance &amp;<br>Economics</span>
+      </div>
+      <div class="strip strip-med" id="strip2">
+        <span class="strip-name">MedicLE</span>
+        <span class="strip-cat">Medicine &amp;<br>Anatomy</span>
+      </div>
+      <div class="strip strip-sport" id="strip3">
+        <span class="strip-name">SportLE</span>
+        <span class="strip-cat">Sports &amp;<br>Athletics</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide" id="s3">
+    <div class="s3-logo" id="s3logo">Jarg<span>LE</span></div>
+    <div class="s3-tag" id="s3tag">For those who know things.</div>
+    <div class="s3-grid" id="s3grid">
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    </div>
+    <div class="s3-cta" id="s3cta">
+      <div class="s3-try">Try it free · every day</div>
+      <div class="s3-url">jargle.org</div>
+    </div>
+  </div>
+
+  <button class="replay" onclick="play()">↺ Replay</button>
+
+<script>
+let timers = [];
+function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+function reset() {
+  clearTimers();
+  ['s1','s2','s3'].forEach(id => document.getElementById(id).classList.remove('visible'));
+  ['strip1','strip2','strip3','s3logo','s3tag','s3grid','s3cta'].forEach(id => {
+    document.getElementById(id).classList.remove('in');
+  });
+}
+
+function crossfade(hideId, showId, cb) {
+  document.getElementById(hideId).classList.remove('visible');
+  setTimeout(() => {
+    document.getElementById(showId).classList.add('visible');
+    if (cb) cb();
+  }, 800);
+}
+
+function play() {
+  reset();
+  setTimeout(() => {
+
+    // S1 fades in
+    document.getElementById('s1').classList.add('visible');
+
+    // S1 holds 4.5s → crossfade to S2
+    timers.push(setTimeout(() => {
+      crossfade('s1', 's2', () => {
+
+        // Strips unfold one by one
+        timers.push(setTimeout(() => document.getElementById('strip1').classList.add('in'), 300));
+        timers.push(setTimeout(() => document.getElementById('strip2').classList.add('in'), 900));
+        timers.push(setTimeout(() => document.getElementById('strip3').classList.add('in'), 1500));
+
+        // S2 holds 5s after last strip → crossfade to S3
+        timers.push(setTimeout(() => {
+          crossfade('s2', 's3', () => {
+            document.getElementById('s3logo').classList.add('in');
+            document.getElementById('s3tag').classList.add('in');
+            document.getElementById('s3grid').classList.add('in');
+            document.getElementById('s3cta').classList.add('in');
+          });
+        }, 1500 + 5000));
+
+      });
+    }, 4500));
+
+  }, 100);
+}
+
+window.addEventListener('load', () => setTimeout(play, 400));
+</script>
+</body>
+</html>
